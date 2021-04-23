@@ -1,0 +1,42 @@
+SYSTEM_THREAD(ENABLED);
+
+SerialLogHandler logHandler;
+
+const pin_t LED_PIN = D6;
+const pin_t SENSOR_PIN = A0;
+
+String analogvalue;
+
+void setup()
+{
+   
+    pinMode(LED_PIN, OUTPUT);
+    digitalWrite(LED_PIN, HIGH);
+    Particle.variable("analogvalue", analogvalue);
+    Particle.function("led", ledToggle);
+}
+
+void loop()
+{
+    analogvalue = analogRead(SENSOR_PIN);
+    Particle.publish("light sensing", analogvalue, PRIVATE);
+    delay(30000ms);
+}
+
+int ledToggle(String command)
+{
+    if (command.equals("on"))
+    {
+        digitalWrite(LED_PIN, HIGH);
+        return 1;
+    }
+    else if (command.equals("off"))
+    {
+        digitalWrite(LED_PIN, LOW);
+        return 0;
+    }
+    else
+    {
+        return -1;
+    }
+}
